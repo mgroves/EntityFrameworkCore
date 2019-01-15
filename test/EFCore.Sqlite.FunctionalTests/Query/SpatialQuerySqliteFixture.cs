@@ -34,13 +34,13 @@ namespace Microsoft.EntityFrameworkCore.Query
         {
             base.OnModelCreating(modelBuilder, context);
 
-            modelBuilder.HasDbFunction(
-                typeof(GeoExtensions).GetMethod(nameof(GeoExtensions.Distance)),
-                b => b.HasTranslation(
-                    e => new SqlFunctionExpression(
-                        "Distance",
-                        typeof(double),
-                        e)));
+            //modelBuilder.HasDbFunction(
+            //    typeof(GeoExtensions).GetMethod(nameof(GeoExtensions.Distance)),
+            //    b => b.HasTranslation(
+            //        e => new SqlFunctionExpression(
+            //            "Distance",
+            //            typeof(double),
+            //            e)));
         }
 
         private class ReplacementTypeMappingSource : SqliteTypeMappingSource

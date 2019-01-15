@@ -216,8 +216,8 @@ namespace Microsoft.EntityFrameworkCore.Query
 
                 var methodInfo = typeof(UDFSqlContext).GetMethod(nameof(MyCustomLengthStatic));
 
-                modelBuilder.HasDbFunction(methodInfo)
-                    .HasTranslation(args => new SqlFunctionExpression("len", methodInfo.ReturnType, args));
+                //modelBuilder.HasDbFunction(methodInfo)
+                //    .HasTranslation(args => new SqlFunctionExpression("len", methodInfo.ReturnType, args));
 
                 //Instance
                 modelBuilder.HasDbFunction(typeof(UDFSqlContext).GetMethod(nameof(CustomerOrderCountInstance)))
@@ -236,8 +236,8 @@ namespace Microsoft.EntityFrameworkCore.Query
 
                 var methodInfo2 = typeof(UDFSqlContext).GetMethod(nameof(MyCustomLengthInstance));
 
-                modelBuilder.HasDbFunction(methodInfo2)
-                    .HasTranslation(args => new SqlFunctionExpression("len", methodInfo2.ReturnType, args));
+                //modelBuilder.HasDbFunction(methodInfo2)
+                //    .HasTranslation(args => new SqlFunctionExpression("len", methodInfo2.ReturnType, args));
             }
         }
 

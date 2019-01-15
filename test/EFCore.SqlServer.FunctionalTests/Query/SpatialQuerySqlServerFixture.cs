@@ -31,14 +31,14 @@ namespace Microsoft.EntityFrameworkCore.Query
         {
             base.OnModelCreating(modelBuilder, context);
 
-            modelBuilder.HasDbFunction(
-                typeof(GeoExtensions).GetMethod(nameof(GeoExtensions.Distance)),
-                b => b.HasTranslation(
-                    e => new SqlFunctionExpression(
-                        e.First(),
-                        "STDistance",
-                        typeof(double),
-                        e.Skip(1))));
+            //modelBuilder.HasDbFunction(
+            //    typeof(GeoExtensions).GetMethod(nameof(GeoExtensions.Distance)),
+            //    b => b.HasTranslation(
+            //        e => new SqlFunctionExpression(
+            //            e.First(),
+            //            "STDistance",
+            //            typeof(double),
+            //            e.Skip(1))));
         }
     }
 }
