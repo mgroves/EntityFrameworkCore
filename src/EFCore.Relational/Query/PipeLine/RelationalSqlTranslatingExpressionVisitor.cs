@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -115,8 +116,135 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline
                 : _methodCallTranslatorProvider.Translate(_model, @object, methodCallExpression.Method, arguments);
         }
 
+        private (Expression, Expression) MatchCompare(Expression expression)
+        {
+            if (expression.Type == typeof(int)
+                && expression is MethodCallExpression methodCall)
+            {
+                if (methodCall.Method.Name == "Compare"
+                    && methodCall.Arguments.Count == 2
+                    && methodCall.Arguments[0].Type == methodCall.Arguments[1].Type)
+                {
+                    return (methodCall.Arguments[0], methodCall.Arguments[1]);
+                }
+                else if (methodCall.Method.Name == "CompareTo"
+                         && methodCall.Arguments.Count == 1
+                         && methodCall.Object != null
+                         && methodCall.Object.Type == methodCall.Arguments[0].Type)
+                {
+                    return (methodCall.Object, methodCall.Arguments[0]);
+                }
+            }
+
+            return default;
+        }
+
+        private SqlExpression TranslateCompare(BinaryExpression binaryExpression)
+        {
+            if (!(binaryExpression.NodeType == ExpressionType.Equal
+                || binaryExpression.NodeType == ExpressionType.NotEqual
+                || binaryExpression.NodeType == ExpressionType.LessThan
+                || binaryExpression.NodeType == ExpressionType.LessThanOrEqual
+                || binaryExpression.NodeType == ExpressionType.GreaterThan
+                || binaryExpression.NodeType == ExpressionType.GreaterThanOrEqual))
+            {
+                return null;
+            }
+
+            var constantValue = 0;
+            Expression left = null;
+            Expression right = null;
+
+            if (binaryExpression.Left is ConstantExpression leftConstant
+                && leftConstant.Type == typeof(int))
+            {
+                (right, left) = MatchCompare(binaryExpression.Right);
+                constantValue = (int)leftConstant.Value;
+            }
+            else if (binaryExpression.Right is ConstantExpression rightConstant
+                && rightConstant.Type == typeof(int))
+            {
+                (left, right) = MatchCompare(binaryExpression.Left);
+                constantValue = (int)rightConstant.Value;
+            }
+
+            if (left != null)
+            {
+                var leftSql = (SqlExpression)Visit(left);
+                var rightSql = (SqlExpression)Visit(right);
+                var op = binaryExpression.NodeType;
+                ExpressionType resultOp = default;
+                if (leftSql != null && rightSql != null)
+                {
+                    // TODO: Can handle cases where value being compared is not -1,0,1
+                    switch (constantValue)
+                    {
+                        case 0:
+                            resultOp = op;
+                            break;
+
+                        case 1:
+                            switch (op)
+                            {
+                                case ExpressionType.Equal:
+                                case ExpressionType.GreaterThanOrEqual:
+                                    resultOp = ExpressionType.GreaterThan;
+                                    break;
+
+                                case ExpressionType.NotEqual:
+                                case ExpressionType.LessThan:
+                                    resultOp = ExpressionType.LessThanOrEqual;
+                                    break;
+
+                                case ExpressionType.GreaterThan:
+                                    return _sqlExpressionFactory.Constant(false);
+
+                                case ExpressionType.LessThanOrEqual:
+                                    return _sqlExpressionFactory.Constant(true);
+                            }
+                            break;
+
+                        case -1:
+                            switch (op)
+                            {
+                                case ExpressionType.Equal:
+                                case ExpressionType.LessThanOrEqual:
+                                    resultOp = ExpressionType.LessThan;
+                                    break;
+
+                                case ExpressionType.NotEqual:
+                                case ExpressionType.GreaterThan:
+                                    resultOp = ExpressionType.GreaterThanOrEqual;
+                                    break;
+
+                                case ExpressionType.LessThan:
+                                    return _sqlExpressionFactory.Constant(false);
+
+                                case ExpressionType.GreaterThanOrEqual:
+                                    return _sqlExpressionFactory.Constant(true);
+                            }
+                            break;
+
+                        default:
+                            return null;
+                    }
+                }
+
+                return _sqlExpressionFactory.MakeBinary(resultOp, leftSql, rightSql, null);
+            }
+
+            return null;
+        }
+
+
         protected override Expression VisitBinary(BinaryExpression binaryExpression)
         {
+            var comparison = TranslateCompare(binaryExpression);
+            if (comparison != null)
+            {
+                return comparison;
+            }
+
             var left = (SqlExpression)Visit(binaryExpression.Left);
             var right = (SqlExpression)Visit(binaryExpression.Right);
 

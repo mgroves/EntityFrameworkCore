@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Query.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Expressions.Internal;
-using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Utilities;
@@ -41,7 +40,6 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
                 { ExpressionType.NotEqual, ExpressionType.Equal }
             };
 
-        private readonly IExpressionFragmentTranslator _compositeExpressionFragmentTranslator;
         private readonly RelationalQueryModelVisitor _queryModelVisitor;
         private readonly IRelationalTypeMappingSource _typeMappingSource;
         private readonly SelectExpression _targetSelectExpression;
@@ -70,7 +68,6 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
             Check.NotNull(dependencies, nameof(dependencies));
             Check.NotNull(queryModelVisitor, nameof(queryModelVisitor));
 
-            _compositeExpressionFragmentTranslator = dependencies.CompositeExpressionFragmentTranslator;
             _typeMappingSource = dependencies.TypeMappingSource;
             _queryModelVisitor = queryModelVisitor;
             _targetSelectExpression = targetSelectExpression;
@@ -98,14 +95,6 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
         /// </returns>
         public override Expression Visit(Expression expression)
         {
-            var translatedExpression = _compositeExpressionFragmentTranslator.Translate(expression);
-
-            if (translatedExpression != null
-                && translatedExpression != expression)
-            {
-                return Visit(translatedExpression);
-            }
-
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (expression != null
                 && (expression.NodeType == ExpressionType.Convert

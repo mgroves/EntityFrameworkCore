@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using JetBrains.Annotations;
-using Microsoft.EntityFrameworkCore.Query.ExpressionTranslators;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Utilities;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,23 +50,14 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
         ///         the constructor at any point in this process.
         ///     </para>
         /// </summary>
-        /// <param name="compositeExpressionFragmentTranslator"> The composite expression fragment translator. </param>
         /// <param name="typeMappingSource"> The type mapper. </param>
         public SqlTranslatingExpressionVisitorDependencies(
-            [NotNull] IExpressionFragmentTranslator compositeExpressionFragmentTranslator,
             [NotNull] IRelationalTypeMappingSource typeMappingSource)
         {
-            Check.NotNull(compositeExpressionFragmentTranslator, nameof(compositeExpressionFragmentTranslator));
             Check.NotNull(typeMappingSource, nameof(typeMappingSource));
 
-            CompositeExpressionFragmentTranslator = compositeExpressionFragmentTranslator;
             TypeMappingSource = typeMappingSource;
         }
-
-        /// <summary>
-        ///     The composite expression fragment translator.
-        /// </summary>
-        public IExpressionFragmentTranslator CompositeExpressionFragmentTranslator { get; }
 
         /// <summary>
         ///     The type mapping source.
@@ -77,21 +67,10 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
         /// <summary>
         ///     Clones this dependency parameter object with one service replaced.
         /// </summary>
-        /// <param name="compositeExpressionFragmentTranslator"> A replacement for the current dependency of this type. </param>
-        /// <returns> A new parameter object with the given service replaced. </returns>
-        public SqlTranslatingExpressionVisitorDependencies With([NotNull] IExpressionFragmentTranslator compositeExpressionFragmentTranslator)
-            => new SqlTranslatingExpressionVisitorDependencies(
-                compositeExpressionFragmentTranslator,
-                TypeMappingSource);
-
-        /// <summary>
-        ///     Clones this dependency parameter object with one service replaced.
-        /// </summary>
         /// <param name="typeMappingSource"> A replacement for the current dependency of this type. </param>
         /// <returns> A new parameter object with the given service replaced. </returns>
         public SqlTranslatingExpressionVisitorDependencies With([NotNull] IRelationalTypeMappingSource typeMappingSource)
             => new SqlTranslatingExpressionVisitorDependencies(
-                CompositeExpressionFragmentTranslator,
                 typeMappingSource);
     }
 }
