@@ -3,11 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Relational.Query.Pipeline;
 using Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Microsoft.EntityFrameworkCore.Sqlite.Query.Pipeline
 {

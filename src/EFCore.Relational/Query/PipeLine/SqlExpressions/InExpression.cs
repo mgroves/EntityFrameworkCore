@@ -1,7 +1,6 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
-using System;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -47,6 +46,11 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
             var values = (SqlExpression)visitor.Visit(Values);
 
             return Update(newItem, values, subquery);
+        }
+
+        public InExpression Negate()
+        {
+            return new InExpression(Item, !Negated, Values, Subquery, TypeMapping);
         }
 
         public InExpression Update(SqlExpression item, SqlExpression values, SelectExpression subquery)

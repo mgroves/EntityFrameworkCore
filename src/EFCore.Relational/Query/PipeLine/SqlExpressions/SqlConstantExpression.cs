@@ -8,6 +8,7 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
 {
     public class SqlConstantExpression : SqlExpression
     {
+        #region Fields & Constructors
         private readonly ConstantExpression _constantExpression;
 
         public SqlConstantExpression(ConstantExpression constantExpression, RelationalTypeMapping typeMapping)
@@ -15,7 +16,13 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
         {
             _constantExpression = constantExpression;
         }
+        #endregion
 
+        #region Public Properties
+        public object Value => _constantExpression.Value;
+        #endregion
+
+        #region Expression-based methods
         public SqlExpression ApplyTypeMapping(RelationalTypeMapping typeMapping)
         {
             return new SqlConstantExpression(_constantExpression, typeMapping);
@@ -25,9 +32,9 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
         {
             return this;
         }
+        #endregion
 
-        public object Value => _constantExpression.Value;
-
+        #region Equality & HashCode
         public override bool Equals(object obj)
             => obj != null
             && (ReferenceEquals(this, obj)
@@ -48,5 +55,6 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
                 return hashCode;
             }
         }
+        #endregion
     }
 }

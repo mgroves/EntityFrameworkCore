@@ -4,12 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using GeoAPI.Geometries;
 using Microsoft.EntityFrameworkCore.Relational.Query.Pipeline;
 using Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions;
-using Microsoft.EntityFrameworkCore.Storage;
 using NetTopologySuite.Geometries;
 
 namespace Microsoft.EntityFrameworkCore.Sqlite.Query.Pipeline

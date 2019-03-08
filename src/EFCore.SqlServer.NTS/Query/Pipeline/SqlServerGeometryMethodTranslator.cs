@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using GeoAPI.Geometries;
 using Microsoft.EntityFrameworkCore.Relational.Query.Pipeline;
@@ -144,7 +143,7 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Query.Pipeline
             return null;
         }
 
-        private static IEnumerable<SqlExpression> Simplify(IEnumerable<SqlExpression> arguments, bool isGeography)
+        private IEnumerable<SqlExpression> Simplify(IEnumerable<SqlExpression> arguments, bool isGeography)
         {
             foreach (var argument in arguments)
             {
@@ -152,7 +151,7 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Query.Pipeline
                     && constant.Value is IGeometry geometry
                     && geometry.SRID == (isGeography ? 4326 : 0))
                 {
-                    yield return new SqlFragmentExpression("'" + geometry.AsText() + "'");
+                    yield return _sqlExpressionFactory.Fragment("'" + geometry.AsText() + "'");
                     continue;
                 }
 

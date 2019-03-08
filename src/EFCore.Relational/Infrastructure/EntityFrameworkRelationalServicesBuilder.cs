@@ -99,7 +99,6 @@ namespace Microsoft.EntityFrameworkCore.Infrastructure
                 { typeof(IMethodCallTranslatorProvider), new ServiceCharacteristics(ServiceLifetime.Singleton) },
                 { typeof(IMemberTranslatorProvider), new ServiceCharacteristics(ServiceLifetime.Singleton) },
                 { typeof(ISqlExpressionFactory), new ServiceCharacteristics(ServiceLifetime.Singleton) },
-                { typeof(ITypeMappingApplyingExpressionVisitor), new ServiceCharacteristics(ServiceLifetime.Singleton) },
                 { typeof(Relational.Query.Pipeline.IMethodCallTranslatorPlugin), new ServiceCharacteristics(ServiceLifetime.Singleton, multipleRegistrations: true) },
                 { typeof(IMemberTranslatorPlugin), new ServiceCharacteristics(ServiceLifetime.Singleton, multipleRegistrations: true) },
 
@@ -185,7 +184,6 @@ namespace Microsoft.EntityFrameworkCore.Infrastructure
             TryAdd<IMethodCallTranslatorProvider, RelationalMethodCallTranslatorProvider>();
             TryAdd<IMemberTranslatorProvider, RelationalMemberTranslatorProvider>();
             TryAdd<IEntityQueryableExpressionVisitorsFactory, RelationalEntityQueryableExpressionVisitorsFactory>();
-            TryAdd<ITypeMappingApplyingExpressionVisitor, TypeMappingApplyingExpressionVisitor>();
             TryAdd<IShapedQueryOptimizingExpressionVisitorsFactory, RelationalShapedQueryOptimizingExpressionVisitorsFactory>();
             TryAdd<ISqlExpressionFactory, SqlExpressionFactory>();
 

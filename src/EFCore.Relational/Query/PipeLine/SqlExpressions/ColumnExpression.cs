@@ -19,7 +19,7 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
         }
 
         internal ColumnExpression(ProjectionExpression subqueryProjection, TableExpressionBase table)
-            : this(subqueryProjection.Alias, table, subqueryProjection.Type, subqueryProjection.SqlExpression.TypeMapping)
+            : this(subqueryProjection.Alias, table, subqueryProjection.Type, subqueryProjection.Expression.TypeMapping)
         {
         }
 

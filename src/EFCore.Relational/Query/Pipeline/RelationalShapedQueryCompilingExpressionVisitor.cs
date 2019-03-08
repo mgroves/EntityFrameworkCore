@@ -207,7 +207,7 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline
                     return CreateGetValueExpression(
                         projectionIndex,
                         null,
-                        projection.SqlExpression.TypeMapping,
+                        projection.Expression.TypeMapping,
                         projectionBindingExpression.Type);
                 }
 

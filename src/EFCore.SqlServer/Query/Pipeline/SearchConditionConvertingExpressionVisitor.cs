@@ -2,25 +2,19 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Query.Pipeline;
 using Microsoft.EntityFrameworkCore.Relational.Query.Pipeline;
 using Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Microsoft.EntityFrameworkCore.SqlServer.Query.Pipeline
 {
     public class SearchConditionConvertingExpressionVisitor : SqlExpressionVisitor
     {
-        private RelationalTypeMapping _boolTypeMapping;
         private bool _isSearchCondition;
         private readonly ISqlExpressionFactory _sqlExpressionFactory;
 
-        public SearchConditionConvertingExpressionVisitor(IRelationalTypeMappingSource typeMappingSource,
-            ISqlExpressionFactory sqlExpressionFactory)
+        public SearchConditionConvertingExpressionVisitor(ISqlExpressionFactory sqlExpressionFactory)
         {
-            _boolTypeMapping = typeMappingSource.FindMapping(typeof(bool));
             _sqlExpressionFactory = sqlExpressionFactory;
         }
 
@@ -123,24 +117,6 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Query.Pipeline
             return ApplyConversion(likeExpression.Update(match, pattern, escapeChar), condition: true);
         }
 
-        protected override Expression VisitOrdering(OrderingExpression orderingExpression)
-        {
-            var sql = (SqlExpression)Visit(orderingExpression.Expression);
-
-            return sql != orderingExpression.Expression
-                ? new OrderingExpression(sql, orderingExpression.Ascending)
-                : orderingExpression;
-        }
-
-        protected override Expression VisitProjection(ProjectionExpression projectionExpression)
-        {
-            var sql = (SqlExpression)Visit(projectionExpression.SqlExpression);
-
-            return sql != projectionExpression.SqlExpression
-                ? new ProjectionExpression(sql, projectionExpression.Alias)
-                : projectionExpression;
-        }
-
         protected override Expression VisitSelect(SelectExpression selectExpression)
         {
             var changed = false;
@@ -171,9 +147,9 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Query.Pipeline
             _isSearchCondition = false;
             foreach (var ordering in selectExpression.Orderings)
             {
-                var newOrderingExpression = (SqlExpression)Visit(ordering.Expression);
-                changed |= newOrderingExpression != ordering.Expression;
-                orderings.Add(new OrderingExpression(newOrderingExpression, ordering.Ascending));
+                var orderingExpression = (SqlExpression)Visit(ordering.Expression);
+                changed |= orderingExpression != ordering.Expression;
+                orderings.Add(ordering.Update(orderingExpression));
             }
 
             var offset = (SqlExpression)Visit(selectExpression.Offset);
@@ -346,6 +322,20 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Query.Pipeline
         protected override Expression VisitTable(TableExpression tableExpression)
         {
             return tableExpression;
+        }
+
+        protected override Expression VisitProjection(ProjectionExpression projectionExpression)
+        {
+            var expression = (SqlExpression)Visit(projectionExpression.Expression);
+
+            return projectionExpression.Update(expression);
+        }
+
+        protected override Expression VisitOrdering(OrderingExpression orderingExpression)
+        {
+            var expression = (SqlExpression)Visit(orderingExpression.Expression);
+
+            return orderingExpression.Update(expression);
         }
     }
 }

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline
 {

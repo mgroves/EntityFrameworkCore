@@ -25,7 +25,6 @@ using Microsoft.EntityFrameworkCore.SqlServer.Update.Internal;
 using Microsoft.EntityFrameworkCore.SqlServer.ValueGeneration.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Update;
-using Microsoft.EntityFrameworkCore.Update.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 

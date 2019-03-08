@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Relational.Query.Pipeline;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.EntityFrameworkCore.Sqlite.Query.Pipeline

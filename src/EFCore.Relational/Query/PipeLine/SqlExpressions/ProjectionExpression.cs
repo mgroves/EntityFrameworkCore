@@ -8,29 +8,39 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
 {
     public class ProjectionExpression : Expression
     {
-        public ProjectionExpression(SqlExpression sqlExpression, string alias)
+        #region Fields & Constructors
+        public ProjectionExpression(SqlExpression expression, string alias)
         {
-            SqlExpression = sqlExpression;
+            Expression = expression;
             Alias = alias;
         }
+        #endregion
 
-        public override Type Type => SqlExpression.Type;
-
-        public override ExpressionType NodeType => ExpressionType.Extension;
-
+        #region Public Properties
         public string Alias { get; }
+        public SqlExpression Expression { get; }
+        #endregion
 
-        public SqlExpression SqlExpression { get; }
+        #region Expression-based methods/properties
+        public override Type Type => Expression.Type;
+        public override ExpressionType NodeType => ExpressionType.Extension;
 
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
-            var sql = (SqlExpression)visitor.Visit(SqlExpression);
+            var expression = (SqlExpression)visitor.Visit(Expression);
 
-            return sql != SqlExpression
-                ? new ProjectionExpression(sql, Alias)
-                : this;
+            return Update(expression);
         }
 
+        public ProjectionExpression Update(SqlExpression expression)
+        {
+            return expression != Expression
+                ? new ProjectionExpression(expression, Alias)
+                : this;
+        }
+        #endregion
+
+        #region Equality & HashCode
         public override bool Equals(object obj)
             => obj != null
             && (ReferenceEquals(this, obj)
@@ -39,7 +49,7 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
 
         private bool Equals(ProjectionExpression projectionExpression)
             => string.Equals(Alias, projectionExpression.Alias)
-            && SqlExpression.Equals(projectionExpression.SqlExpression);
+            && Expression.Equals(projectionExpression.Expression);
 
         public override int GetHashCode()
         {
@@ -47,10 +57,11 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
             {
                 var hashCode = base.GetHashCode();
                 hashCode = (hashCode * 397) ^ Alias.GetHashCode();
-                hashCode = (hashCode * 397) ^ SqlExpression.GetHashCode();
+                hashCode = (hashCode * 397) ^ Expression.GetHashCode();
 
                 return hashCode;
             }
         }
+        #endregion
     }
 }

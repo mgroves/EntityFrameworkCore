@@ -8,21 +8,28 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
 {
     public abstract class TableExpressionBase : Expression
     {
+        #region Fields & Constructors
         protected TableExpressionBase(string alias)
         {
             Alias = alias;
         }
+        #endregion
 
+        #region Public Properties
+        public string Alias { get; }
+        #endregion
+
+        #region Expression-based methods/properties
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
             return this;
         }
 
-        public string Alias { get; }
-
         public override Type Type => typeof(object);
         public override ExpressionType NodeType => ExpressionType.Extension;
+        #endregion
 
+        #region Equality & HashCode
         public override bool Equals(object obj)
             => obj != null
             && (ReferenceEquals(this, obj)
@@ -41,5 +48,6 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
                 return hashCode;
             }
         }
+        #endregion
     }
 }

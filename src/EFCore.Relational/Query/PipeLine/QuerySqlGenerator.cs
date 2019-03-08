@@ -138,10 +138,10 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline
 
         protected override Expression VisitProjection(ProjectionExpression projectionExpression)
         {
-            Visit(projectionExpression.SqlExpression);
+            Visit(projectionExpression.Expression);
 
             if (!string.Equals(string.Empty, projectionExpression.Alias)
-                && !(projectionExpression.SqlExpression is ColumnExpression column
+                && !(projectionExpression.Expression is ColumnExpression column
                      && string.Equals(column.Name, projectionExpression.Alias)))
             {
                 _relationalCommandBuilder.Append(" AS " + projectionExpression.Alias);

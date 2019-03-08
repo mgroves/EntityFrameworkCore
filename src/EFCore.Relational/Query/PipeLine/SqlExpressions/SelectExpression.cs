@@ -18,7 +18,6 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
         private List<TableExpressionBase> _tables = new List<TableExpressionBase>();
         private readonly List<ProjectionExpression> _projection = new List<ProjectionExpression>();
         private List<OrderingExpression> _orderings = new List<OrderingExpression>();
-
         public IReadOnlyList<ProjectionExpression> Projection => _projection;
         public IReadOnlyList<TableExpressionBase> Tables => _tables;
         public IReadOnlyList<OrderingExpression> Orderings => _orderings;
@@ -38,7 +37,6 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
             _projection = projections;
             _tables = tables;
         }
-
         public SelectExpression(IEntityType entityType)
             : base("")
         {
@@ -51,14 +49,12 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
 
             _projectionMapping[new ProjectionMember()] = new EntityProjectionExpression(entityType, tableExpression);
         }
-
         public SqlExpression BindProperty(Expression projectionExpression, IProperty property)
         {
             var member = (projectionExpression as ProjectionBindingExpression).ProjectionMember;
 
             return ((EntityProjectionExpression)_projectionMapping[member]).GetProperty(property);
         }
-
         public void ApplyProjection()
         {
             if (Projection.Any())
@@ -260,7 +256,7 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
             {
                 var orderingExpression = ordering.Expression;
                 var innerProjection = subquery._projection.FirstOrDefault(
-                    pe => pe.SqlExpression.Equals(orderingExpression));
+                    pe => pe.Expression.Equals(orderingExpression));
                 if (innerProjection != null)
                 {
                     _orderings.Add(new OrderingExpression(new ColumnExpression(innerProjection, subquery), ordering.Ascending));
@@ -326,9 +322,9 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
             var orderings = new List<OrderingExpression>();
             foreach (var ordering in _orderings)
             {
-                var newOrderingExpression = (SqlExpression)visitor.Visit(ordering.Expression);
-                changed |= newOrderingExpression != ordering.Expression;
-                orderings.Add(new OrderingExpression(newOrderingExpression, ordering.Ascending));
+                var orderingExpression = (SqlExpression)visitor.Visit(ordering.Expression);
+                changed |= orderingExpression != ordering.Expression;
+                orderings.Add(ordering.Update(orderingExpression));
             }
 
             var offset = (SqlExpression)visitor.Visit(Offset);

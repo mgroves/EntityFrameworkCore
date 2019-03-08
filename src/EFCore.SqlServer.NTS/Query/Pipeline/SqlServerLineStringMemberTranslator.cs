@@ -5,7 +5,6 @@ using System;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Relational.Query.Pipeline;
 using Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions;
-using Microsoft.EntityFrameworkCore.Storage;
 using NetTopologySuite.Geometries;
 
 namespace Microsoft.EntityFrameworkCore.SqlServer.Query.Pipeline

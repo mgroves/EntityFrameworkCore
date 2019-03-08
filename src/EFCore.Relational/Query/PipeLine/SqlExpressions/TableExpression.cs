@@ -5,15 +5,21 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
 {
     public class TableExpression : TableExpressionBase
     {
+        #region Fields & Constructors
         public TableExpression(string table, string schema, string alias)
             : base(alias)
         {
             Table = table;
             Schema = schema;
         }
+        #endregion
 
+        #region Public Properties
         public string Table { get; }
         public string Schema { get; }
+        #endregion
+
+        #region Equality & HashCode
 
         public override bool Equals(object obj)
             => obj != null
@@ -37,5 +43,6 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
                 return hashCode;
             }
         }
+        #endregion
     }
 }

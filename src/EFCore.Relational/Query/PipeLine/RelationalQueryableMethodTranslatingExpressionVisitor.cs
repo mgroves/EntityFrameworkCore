@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Query.Pipeline;
 using Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline
 {
@@ -207,7 +206,7 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline
             }
 
             var translation = _sqlExpressionFactory.ApplyDefaultTypeMapping(
-                _sqlExpressionFactory.Function("COUNT", new[] { new SqlFragmentExpression("*") }, typeof(int)));
+                _sqlExpressionFactory.Function("COUNT", new[] { _sqlExpressionFactory.Fragment("*") }, typeof(int)));
             var _projectionMapping = new Dictionary<ProjectionMember, Expression>
             {
                 { new ProjectionMember(), translation }

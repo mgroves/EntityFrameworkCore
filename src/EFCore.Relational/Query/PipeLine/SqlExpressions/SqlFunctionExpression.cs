@@ -11,6 +11,7 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
 {
     public class SqlFunctionExpression : SqlExpression
     {
+        #region Fields & Constructors
         public SqlFunctionExpression(
             string functionName,
             bool niladic,
@@ -85,7 +86,17 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
             IsNiladic = niladic;
             Arguments = (arguments ?? Array.Empty<SqlExpression>()).ToList();
         }
+        #endregion
 
+        #region Public Properties
+        public string FunctionName { get; }
+        public string Schema { get; }
+        public bool IsNiladic { get; }
+        public IReadOnlyList<SqlExpression> Arguments { get; }
+        public Expression Instance { get; }
+        #endregion
+
+        #region Expression-based methods
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
             var changed = false;
@@ -122,12 +133,15 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
                 typeMapping ?? TypeMapping);
         }
 
-        public string FunctionName { get; }
-        public string Schema { get; }
-        public bool IsNiladic { get; }
-        public IReadOnlyList<SqlExpression> Arguments { get; }
-        public Expression Instance { get; }
+        public SqlFunctionExpression Update(SqlExpression instance, IReadOnlyList<SqlExpression> arguments)
+        {
+            return instance != Instance || arguments != Arguments
+                ? new SqlFunctionExpression(instance, Schema, FunctionName, IsNiladic, arguments, Type, TypeMapping)
+                : this;
+        }
+        #endregion
 
+        #region Equality & HashCode
         public override bool Equals(object obj)
             => obj != null
             && (ReferenceEquals(this, obj)
@@ -157,5 +171,6 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions
                 return hashCode;
             }
         }
+        #endregion
     }
 }

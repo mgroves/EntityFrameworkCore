@@ -5,21 +5,18 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query.Pipeline;
 using Microsoft.EntityFrameworkCore.Relational.Query.Pipeline;
-using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Microsoft.EntityFrameworkCore.SqlServer.Query.Pipeline
 {
     public class SqlServerShapedQueryOptimizingExpressionVisitors : RelationalShapedQueryOptimizingExpressionVisitors
     {
-        private readonly IRelationalTypeMappingSource _typeMappingSource;
         private readonly ISqlExpressionFactory _sqlExpressionFactory;
 
-        public SqlServerShapedQueryOptimizingExpressionVisitors(QueryCompilationContext2 queryCompilationContext,
-            IRelationalTypeMappingSource typeMappingSource,
+        public SqlServerShapedQueryOptimizingExpressionVisitors(
+            QueryCompilationContext2 queryCompilationContext,
             ISqlExpressionFactory sqlExpressionFactory)
             : base(queryCompilationContext)
         {
-            _typeMappingSource = typeMappingSource;
             _sqlExpressionFactory = sqlExpressionFactory;
         }
 
@@ -30,7 +27,7 @@ namespace Microsoft.EntityFrameworkCore.SqlServer.Query.Pipeline
                 yield return visitor;
             }
 
-            yield return new SearchConditionConvertingExpressionVisitor(_typeMappingSource, _sqlExpressionFactory);
+            yield return new SearchConditionConvertingExpressionVisitor(_sqlExpressionFactory);
         }
     }
 }
