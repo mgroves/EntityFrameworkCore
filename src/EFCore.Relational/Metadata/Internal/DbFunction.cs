@@ -18,7 +18,7 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
     ///     directly from your code. This API may change or be removed in future releases.
     /// </summary>
     // Issue#11266 This type is being used by provider code. Do not break.
-    public class DbFunction : IMutableDbFunction, IMethodCallTranslator
+    public class DbFunction : IMutableDbFunction
     {
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -185,20 +185,5 @@ namespace Microsoft.EntityFrameworkCore.Metadata.Internal
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public virtual Func<IReadOnlyCollection<SqlExpression>, SqlExpression> Translation { get; set; }
-
-        /// <summary>
-        ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public SqlExpression Translate(SqlExpression instance, MethodInfo method, IList<SqlExpression> arguments)
-        {
-            return Translation?.Invoke(arguments.ToList())
-                ?? new SqlFunctionExpression(
-                    Schema,
-                    FunctionName,
-                    arguments,
-                    MethodInfo.ReturnType,
-                    null);
-        }
     }
 }

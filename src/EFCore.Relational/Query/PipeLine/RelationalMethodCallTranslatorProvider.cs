@@ -13,6 +13,7 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline
     {
         private readonly List<IMethodCallTranslator> _plugins = new List<IMethodCallTranslator>();
         private readonly List<IMethodCallTranslator> _translators = new List<IMethodCallTranslator>();
+        private readonly ISqlExpressionFactory _sqlExpressionFactory;
 
         public RelationalMethodCallTranslatorProvider(
             ISqlExpressionFactory sqlExpressionFactory,
@@ -29,19 +30,23 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline
                     new EnumHasFlagTranslator(sqlExpressionFactory),
                     new GetValueOrDefaultTranslator(sqlExpressionFactory)
                 });
+            _sqlExpressionFactory = sqlExpressionFactory;
         }
 
         public SqlExpression Translate(IModel model, SqlExpression instance, MethodInfo method, IList<SqlExpression> arguments)
         {
-            //var dbFunctionTranslation = ((IMethodCallTranslator)model.Relational().FindDbFunction(method))
-            //    ?.Translate(instance, method, arguments);
-
-            //if (dbFunctionTranslation != null)
-            //{
-            //    return _typeMappingApplyingExpressionVisitor.ApplyTypeMapping(
-            //        dbFunctionTranslation,
-            //        _typeMappingSource.FindMapping(dbFunctionTranslation.Type));
-            //}
+            var dbFunction = model.Relational().FindDbFunction(method);
+            if (dbFunction != null)
+            {
+                return dbFunction.Translation?.Invoke(
+                        arguments.Select(e => _sqlExpressionFactory.ApplyDefaultTypeMapping(e)).ToList())
+                    ?? _sqlExpressionFactory.Function(
+                        dbFunction.Schema,
+                        dbFunction.FunctionName,
+                        arguments,
+                        method.ReturnType,
+                        null);
+            }
 
             return _plugins.Concat(_translators)
                 .Select(t => t.Translate(instance, method, arguments))

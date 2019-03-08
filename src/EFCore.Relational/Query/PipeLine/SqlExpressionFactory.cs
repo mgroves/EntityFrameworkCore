@@ -78,10 +78,11 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline
                 likeExpression.Match, likeExpression.Pattern, likeExpression.EscapeChar)
                 ?? _typeMappingSource.FindMapping(likeExpression.Match.Type);
 
-            return likeExpression.Update(
+            return new LikeExpression(
                 ApplyTypeMapping(likeExpression.Match, inferredTypeMapping),
                 ApplyTypeMapping(likeExpression.Pattern, inferredTypeMapping),
-                ApplyTypeMapping(likeExpression.EscapeChar, inferredTypeMapping));
+                ApplyTypeMapping(likeExpression.EscapeChar, inferredTypeMapping),
+                _boolTypeMapping);
         }
 
         private SqlExpression ApplyTypeMappingOnCase(

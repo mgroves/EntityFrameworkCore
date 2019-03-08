@@ -3,6 +3,7 @@
 
 using GeoAPI.Geometries;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Relational.Query.Pipeline.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Sqlite.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.TestModels.SpatialModel;
@@ -33,13 +34,14 @@ namespace Microsoft.EntityFrameworkCore.Query
         {
             base.OnModelCreating(modelBuilder, context);
 
-            //modelBuilder.HasDbFunction(
-            //    typeof(GeoExtensions).GetMethod(nameof(GeoExtensions.Distance)),
-            //    b => b.HasTranslation(
-            //        e => new SqlFunctionExpression(
-            //            "Distance",
-            //            typeof(double),
-            //            e)));
+            modelBuilder.HasDbFunction(
+                typeof(GeoExtensions).GetMethod(nameof(GeoExtensions.Distance)),
+                b => b.HasTranslation(
+                    e => new SqlFunctionExpression(
+                        "Distance",
+                        e,
+                        typeof(double),
+                        null)));
         }
 
         private class ReplacementTypeMappingSource : SqliteTypeMappingSource

@@ -52,19 +52,15 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
         ///     </para>
         /// </summary>
         /// <param name="compositeExpressionFragmentTranslator"> The composite expression fragment translator. </param>
-        /// <param name="methodCallTranslator"> The method call translator. </param>
         /// <param name="typeMappingSource"> The type mapper. </param>
         public SqlTranslatingExpressionVisitorDependencies(
             [NotNull] IExpressionFragmentTranslator compositeExpressionFragmentTranslator,
-            [NotNull] ICompositeMethodCallTranslator methodCallTranslator,
             [NotNull] IRelationalTypeMappingSource typeMappingSource)
         {
             Check.NotNull(compositeExpressionFragmentTranslator, nameof(compositeExpressionFragmentTranslator));
-            Check.NotNull(methodCallTranslator, nameof(methodCallTranslator));
             Check.NotNull(typeMappingSource, nameof(typeMappingSource));
 
             CompositeExpressionFragmentTranslator = compositeExpressionFragmentTranslator;
-            MethodCallTranslator = methodCallTranslator;
             TypeMappingSource = typeMappingSource;
         }
 
@@ -72,11 +68,6 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
         ///     The composite expression fragment translator.
         /// </summary>
         public IExpressionFragmentTranslator CompositeExpressionFragmentTranslator { get; }
-
-        /// <summary>
-        ///     The method call translator.
-        /// </summary>
-        public ICompositeMethodCallTranslator MethodCallTranslator { get; }
 
         /// <summary>
         ///     The type mapping source.
@@ -91,18 +82,6 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
         public SqlTranslatingExpressionVisitorDependencies With([NotNull] IExpressionFragmentTranslator compositeExpressionFragmentTranslator)
             => new SqlTranslatingExpressionVisitorDependencies(
                 compositeExpressionFragmentTranslator,
-                MethodCallTranslator,
-                TypeMappingSource);
-
-        /// <summary>
-        ///     Clones this dependency parameter object with one service replaced.
-        /// </summary>
-        /// <param name="methodCallTranslator"> A replacement for the current dependency of this type. </param>
-        /// <returns> A new parameter object with the given service replaced. </returns>
-        public SqlTranslatingExpressionVisitorDependencies With([NotNull] ICompositeMethodCallTranslator methodCallTranslator)
-            => new SqlTranslatingExpressionVisitorDependencies(
-                CompositeExpressionFragmentTranslator,
-                methodCallTranslator,
                 TypeMappingSource);
 
         /// <summary>
@@ -113,7 +92,6 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
         public SqlTranslatingExpressionVisitorDependencies With([NotNull] IRelationalTypeMappingSource typeMappingSource)
             => new SqlTranslatingExpressionVisitorDependencies(
                 CompositeExpressionFragmentTranslator,
-                MethodCallTranslator,
                 typeMappingSource);
     }
 }

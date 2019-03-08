@@ -152,7 +152,7 @@ namespace Microsoft.EntityFrameworkCore.Relational.Query.Pipeline
 
         protected override Expression VisitSqlFunction(SqlFunctionExpression sqlFunctionExpression)
         {
-            if (sqlFunctionExpression.Schema != null)
+            if (!string.IsNullOrEmpty(sqlFunctionExpression.Schema))
             {
                 _relationalCommandBuilder
                     .Append(_sqlGenerationHelper.DelimitIdentifier(sqlFunctionExpression.Schema))

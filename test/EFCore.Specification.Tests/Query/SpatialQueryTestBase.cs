@@ -541,7 +541,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                 });
         }
 
-        [ConditionalTheory(Skip = "TaskList#18")]
+        [ConditionalTheory]
         [MemberData(nameof(IsAsyncData))]
         public virtual Task Distance_on_converted_geometry_type(bool isAsync)
         {
@@ -559,7 +559,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                 elementAsserter: (e, a) => { Assert.Equal(e.Id, a.Id); });
         }
 
-        [ConditionalTheory(Skip = "TaskList#18")]
+        [ConditionalTheory]
         [MemberData(nameof(IsAsyncData))]
         public virtual Task Distance_on_converted_geometry_type_constant(bool isAsync)
         {
@@ -575,7 +575,7 @@ namespace Microsoft.EntityFrameworkCore.Query
                 elementAsserter: (e, a) => { Assert.Equal(e.Id, a.Id); });
         }
 
-        [ConditionalTheory(Skip = "TaskList#18")]
+        [ConditionalTheory]
         [MemberData(nameof(IsAsyncData))]
         public virtual Task Distance_on_converted_geometry_type_constant_lhs(bool isAsync)
         {

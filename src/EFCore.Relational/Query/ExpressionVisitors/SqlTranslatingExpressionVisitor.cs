@@ -42,7 +42,6 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
             };
 
         private readonly IExpressionFragmentTranslator _compositeExpressionFragmentTranslator;
-        private readonly ICompositeMethodCallTranslator _methodCallTranslator;
         private readonly RelationalQueryModelVisitor _queryModelVisitor;
         private readonly IRelationalTypeMappingSource _typeMappingSource;
         private readonly SelectExpression _targetSelectExpression;
@@ -72,7 +71,6 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
             Check.NotNull(queryModelVisitor, nameof(queryModelVisitor));
 
             _compositeExpressionFragmentTranslator = dependencies.CompositeExpressionFragmentTranslator;
-            _methodCallTranslator = dependencies.MethodCallTranslator;
             _typeMappingSource = dependencies.TypeMappingSource;
             _queryModelVisitor = queryModelVisitor;
             _targetSelectExpression = targetSelectExpression;
@@ -642,15 +640,6 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
                             ? Expression.Call(operand, methodCallExpression.Method, arguments)
                             : Expression.Call(methodCallExpression.Method, arguments);
 
-                    var translatedExpression = _methodCallTranslator.Translate(
-                        boundExpression,
-                        compilationContext.Model,
-                        compilationContext.Loggers.GetLogger<DbLoggerCategory.Query>());
-
-                    if (translatedExpression != null)
-                    {
-                        return translatedExpression;
-                    }
                 }
             }
 
