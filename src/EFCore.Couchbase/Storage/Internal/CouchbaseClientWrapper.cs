@@ -10,6 +10,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Couchbase.Authentication;
+using Couchbase.Configuration.Client;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Couchbase.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -23,9 +25,8 @@ namespace Microsoft.EntityFrameworkCore.Couchbase.Storage.Internal
 {
     public class CouchbaseClientWrapper : IDisposable
     {
-        private readonly string _databaseId;
-        private readonly string _endPoint;
-        private readonly string _authKey;
+        private readonly ClientConfiguration _clientConfiguration;
+        private readonly IAuthenticator _authenticator;
         //private CouchbaseClient _client;
         private readonly IExecutionStrategyFactory _executionStrategyFactory;
         private readonly IDiagnosticsLogger<DbLoggerCategory.Database.Command> _commandLogger;
@@ -46,9 +47,9 @@ namespace Microsoft.EntityFrameworkCore.Couchbase.Storage.Internal
         {
             var options = dbContextOptions.FindExtension<CouchbaseOptionsExtension>();
 
-            _databaseId = options.DatabaseName;
-            _endPoint = options.ServiceEndPoint;
-            _authKey = options.AuthKeyOrResourceToken;
+            _clientConfiguration = options.ClientConfiguration;
+            _authenticator = options.Authenticator;
+
             _executionStrategyFactory = executionStrategyFactory;
             _commandLogger = commandLogger;
         }

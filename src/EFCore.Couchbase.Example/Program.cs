@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Couchbase.Authentication;
+using Couchbase.Configuration.Client;
 using Microsoft.EntityFrameworkCore;
 
 namespace EFCore.Couchbase.Example
@@ -11,13 +14,19 @@ namespace EFCore.Couchbase.Example
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseCouchbase("","","");
+            var clientConfiguration = new ClientConfiguration
+            {
+                Servers = new List<Uri> {new Uri("http://localhost:8091")}
+            };
+            var authenticator = new PasswordAuthenticator("Administrator", "password");
+            optionsBuilder.UseCouchbase(clientConfiguration, authenticator);
         }
     }
 
     public class Blog
     {
-        public int BlogId { get; set; }
+        [Key]
+        public Guid BlogId { get; set; }
         public string Url { get; set; }
         public int Rating { get; set; }
         public List<Post> Posts { get; set; }

@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Couchbase.Authentication;
+using Couchbase.Configuration.Client;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -13,9 +15,10 @@ namespace Microsoft.EntityFrameworkCore.Couchbase.Infrastructure.Internal
 {
     public class CouchbaseOptionsExtension : IDbContextOptionsExtension
     {
-        private string _serviceEndPoint;
-        private string _authKeyOrResourceToken;
-        private string _databaseName;
+        private ClientConfiguration _clientConfiguration;
+
+        private IAuthenticator _authenticator;
+
         private Func<ExecutionStrategyDependencies, IExecutionStrategy> _executionStrategyFactory;
         private string _logFragment;
 
@@ -25,44 +28,32 @@ namespace Microsoft.EntityFrameworkCore.Couchbase.Infrastructure.Internal
 
         protected CouchbaseOptionsExtension(CouchbaseOptionsExtension copyFrom)
         {
-            _serviceEndPoint = copyFrom._serviceEndPoint;
-            _authKeyOrResourceToken = copyFrom._authKeyOrResourceToken;
-            _databaseName = copyFrom._databaseName;
+            _clientConfiguration = copyFrom._clientConfiguration;
+            _authenticator = copyFrom._authenticator;
             _executionStrategyFactory = copyFrom._executionStrategyFactory;
         }
 
-        public virtual string ServiceEndPoint => _serviceEndPoint;
-
-        public virtual CouchbaseOptionsExtension WithServiceEndPoint(string serviceEndPoint)
+        public virtual CouchbaseOptionsExtension WithClientConfiguration(ClientConfiguration clientConfiguration)
         {
             var clone = Clone();
 
-            clone._serviceEndPoint = serviceEndPoint;
+            clone._clientConfiguration = clientConfiguration;
 
             return clone;
         }
 
-        public virtual string AuthKeyOrResourceToken => _authKeyOrResourceToken;
+        public virtual ClientConfiguration ClientConfiguration => _clientConfiguration;
 
-        public virtual CouchbaseOptionsExtension WithAuthKeyOrResourceToken(string authKeyOrResourceToken)
+        public virtual CouchbaseOptionsExtension WithAuthenticator(IAuthenticator authenticator)
         {
             var clone = Clone();
 
-            clone._authKeyOrResourceToken = authKeyOrResourceToken;
+            clone._authenticator = authenticator;
 
             return clone;
         }
 
-        public virtual string DatabaseName => _databaseName;
-
-        public virtual CouchbaseOptionsExtension WithDatabaseName(string database)
-        {
-            var clone = Clone();
-
-            clone._databaseName = database;
-
-            return clone;
-        }
+        public virtual IAuthenticator Authenticator => _authenticator;
 
         /// <summary>
         ///     A factory for creating the default <see cref="IExecutionStrategy" />, or <c>null</c> if none has been
@@ -117,9 +108,10 @@ namespace Microsoft.EntityFrameworkCore.Couchbase.Infrastructure.Internal
                 {
                     var builder = new StringBuilder();
 
-                    builder.Append("ServiceEndPoint=").Append(_serviceEndPoint).Append(' ');
-
-                    builder.Append("Database=").Append(_databaseName).Append(' ');
+                    // TODO: log client configuration stuff?
+//                    builder.Append("ServiceEndPoint=").Append(_serviceEndPoint).Append(' ');
+//
+//                    builder.Append("Database=").Append(_databaseName).Append(' ');
 
                     _logFragment = builder.ToString();
                 }
