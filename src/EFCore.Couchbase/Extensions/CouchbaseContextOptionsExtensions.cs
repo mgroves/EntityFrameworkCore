@@ -18,40 +18,35 @@ namespace Microsoft.EntityFrameworkCore
             [NotNull] this DbContextOptionsBuilder<TContext> optionsBuilder,
             [NotNull] ClientConfiguration clientConfiguration,
             [NotNull] IAuthenticator authenticator,
+            [NotNull] string bucketName,
             [CanBeNull] Action<CouchbaseContextOptionsBuilder> CouchbaseOptionsAction = null)
             where TContext : DbContext
             => (DbContextOptionsBuilder<TContext>)UseCouchbase(
                 (DbContextOptionsBuilder)optionsBuilder,
                 clientConfiguration,
                 authenticator,
+                bucketName,
                 CouchbaseOptionsAction);
 
         public static DbContextOptionsBuilder UseCouchbase(
             [NotNull] this DbContextOptionsBuilder optionsBuilder,
             [NotNull] ClientConfiguration clientConfiguration,
             [NotNull] IAuthenticator authenticator,
-//            [NotNull] string serviceEndPoint,
-//            [NotNull] string authKeyOrResourceToken,
-//            [NotNull] string databaseName,
+            [NotNull] string bucketName,
             [CanBeNull] Action<CouchbaseContextOptionsBuilder> CouchbaseOptionsAction = null)
         {
             Check.NotNull(optionsBuilder, nameof(optionsBuilder));
             Check.NotNull(clientConfiguration, nameof(clientConfiguration));
             Check.NotNull(authenticator, nameof(authenticator));
-
-//            Check.NotNull(serviceEndPoint, nameof(serviceEndPoint));
-//            Check.NotEmpty(authKeyOrResourceToken, nameof(authKeyOrResourceToken));
-//            Check.NotEmpty(databaseName, nameof(databaseName));
+            Check.NotNull(bucketName, nameof(bucketName));
 
             var extension = optionsBuilder.Options.FindExtension<CouchbaseOptionsExtension>()
                             ?? new CouchbaseOptionsExtension();
 
             extension = extension
                 .WithClientConfiguration(clientConfiguration)
-                .WithAuthenticator(authenticator);
-//                .WithServiceEndPoint(serviceEndPoint)
-//                .WithAuthKeyOrResourceToken(authKeyOrResourceToken)
-//                .WithDatabaseName(databaseName);
+                .WithAuthenticator(authenticator)
+                .WithBucketName(bucketName);
 
             ((IDbContextOptionsBuilderInfrastructure)optionsBuilder).AddOrUpdateExtension(extension);
 

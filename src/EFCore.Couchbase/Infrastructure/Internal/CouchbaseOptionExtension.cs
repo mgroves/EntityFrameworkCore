@@ -16,8 +16,8 @@ namespace Microsoft.EntityFrameworkCore.Couchbase.Infrastructure.Internal
     public class CouchbaseOptionsExtension : IDbContextOptionsExtension
     {
         private ClientConfiguration _clientConfiguration;
-
         private IAuthenticator _authenticator;
+        private string _bucketName;
 
         private Func<ExecutionStrategyDependencies, IExecutionStrategy> _executionStrategyFactory;
         private string _logFragment;
@@ -49,6 +49,16 @@ namespace Microsoft.EntityFrameworkCore.Couchbase.Infrastructure.Internal
             var clone = Clone();
 
             clone._authenticator = authenticator;
+
+            return clone;
+        }
+        public virtual string BucketName => _bucketName;
+
+        public virtual CouchbaseOptionsExtension WithBucketName(string bucketName)
+        {
+            var clone = Clone();
+
+            clone._bucketName = bucketName;
 
             return clone;
         }

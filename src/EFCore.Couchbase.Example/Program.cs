@@ -19,7 +19,8 @@ namespace EFCore.Couchbase.Example
                 Servers = new List<Uri> {new Uri("http://localhost:8091")}
             };
             var authenticator = new PasswordAuthenticator("Administrator", "password");
-            optionsBuilder.UseCouchbase(clientConfiguration, authenticator);
+            var bucketName = "default";
+            optionsBuilder.UseCouchbase(clientConfiguration, authenticator, bucketName);
         }
     }
 
